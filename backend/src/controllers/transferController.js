@@ -397,6 +397,39 @@ export const transferMoney = async (req, res) => {
     if (errors[error.message]) {
       const [status, message] = errors[error.message];
 
+      const refusedReasons = [
+        "USER_NOT_ACTIVE",
+        "ONBOARDING_NOT_APPROVED",
+        "SENDER_ACCOUNT_NOT_FOUND",
+        "RECEIVER_NOT_FOUND",
+        "SAME_ACCOUNT",
+        "CURRENCY_MISMATCH",
+        "INSUFFICIENT_FUNDS",
+      ];
+
+      if (refusedReasons.includes(error.message)) {
+        try {
+          await prisma.auditLog.create({
+            data: {
+              actorId: userId,
+              action: "MONEY_TRANSFER_REFUSED",
+              entityType: "TransferAttempt",
+              metadata: {
+                reason: error.message,
+                toAccountNumber,
+                amountPaise: amount.toString(),
+              },
+              ipAddress: req.ip,
+            },
+          });
+        } catch (auditError) {
+          console.error(
+            "Failed to record refused transfer:",
+            auditError
+          );
+        }
+      }
+
       return res.status(status).json({
         message,
       });

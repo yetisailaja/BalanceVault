@@ -30,3 +30,9 @@ backend/src/scripts/resetAdminPassword.js
 backend/src/scripts/resetCustomerPassword.js
 backend/src/scripts/resetSecondCustomerPassword.js
 backend/src/config/scripts/createAdmin.js
+
+# Local development backups
+backend/src/controllers/*.backup
+
+# Local development backups
+backend/src/controllers/*.backup

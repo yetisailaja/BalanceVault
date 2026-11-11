@@ -11,6 +11,8 @@ import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import transferRoutes from "./routes/transferRoutes.js";
+import withdrawalRoutes from "./routes/withdrawalRoutes.js";
+import auditorRoutes from "./routes/auditorRoutes.js";
 
 const app = express();
 
@@ -69,11 +71,17 @@ app.use("/api/auth", authRoutes);
 // Admin routes
 app.use("/api/admin", adminRoutes);
 
-// Customer account routes
+// Account-holder routes
 app.use("/api/accounts", accountRoutes);
 
 // Money transfer routes
 app.use("/api/transfers", transferRoutes);
+
+// Money withdrawal routes
+app.use("/api/withdrawals", withdrawalRoutes);
+
+// Read-only auditor routes
+app.use("/api/auditor", auditorRoutes);
 
 // Handle unknown routes
 app.use((req, res) => {
