@@ -44,7 +44,8 @@ export const register = async (req, res) => {
       });
     }
 
-    const { fullName, email, password } = validation.data;
+    const { fullName, password } = validation.data;
+    const email = validation.data.email.toLowerCase();
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -64,20 +65,25 @@ export const register = async (req, res) => {
           fullName,
           email,
           passwordHash,
-          // Never accept the role from public registration input.
-          role: "CUSTOMER",
+
+          // Public registration always creates an account holder.
+          // Never accept a role from the client.
+          role: "ACCOUNT_HOLDER",
+          status: "ACTIVE",
         },
         select: {
           id: true,
           fullName: true,
           email: true,
           role: true,
+          status: true,
         },
       });
 
       await tx.onboardingRequest.create({
         data: {
           userId: newUser.id,
+          status: "PENDING",
         },
       });
 
@@ -96,7 +102,8 @@ export const register = async (req, res) => {
     const token = createToken(user);
 
     return res.status(201).json({
-      message: "Registration successful",
+      message:
+        "Registration submitted. Your account is awaiting administrator approval.",
       user,
       token,
     });
@@ -127,7 +134,8 @@ export const login = async (req, res) => {
       });
     }
 
-    const { email, password } = validation.data;
+    const email = validation.data.email.toLowerCase();
+    const { password } = validation.data;
 
     const user = await prisma.user.findUnique({
       where: { email },
