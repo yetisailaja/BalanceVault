@@ -1,12 +1,14 @@
-databases:
+﻿databases:
   - name: balancevault-db
     databaseName: balancevault
     user: balancevault
+    plan: free
 
 services:
   - type: web
     name: balancevault-api
     runtime: node
+    plan: free
     rootDir: backend
     buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy
     startCommand: npm start
